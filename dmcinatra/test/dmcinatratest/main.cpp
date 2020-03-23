@@ -1,5 +1,6 @@
 #include <iostream>
 #include "cinatra.hpp"
+#include "dmutil.h"
 
 using namespace cinatra;
 
@@ -53,6 +54,9 @@ struct person
 };
 
 int main() {
+
+	DMSetWorkPath(DMGetRootPath() + ".." + PATH_DELIMITER_STR + "www");
+
 	nanolog::initialize(nanolog::GuaranteedLogger(), "/tmp/", "nanolog", 1);
 	const int max_thread_num = 4;
 	http_server server(max_thread_num);
