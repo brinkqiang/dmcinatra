@@ -1,0 +1,33 @@
+// See README.txt for information and build instructions.
+//
+// Note: START and END tags are used in comments to define sections used in
+// tutorials.  They are not part of the syntax for Protocol Buffers.
+//
+// To get an in-depth walkthrough of this file and the related examples, see:
+// https://developers.google.com/protocol-buffers/docs/tutorials
+
+// [START declaration]
+syntax = "proto3";
+
+package msgperformance;
+
+// [START messages]
+message dmnode_xmsg {
+  uint32 msgid = 1;
+  uint64 maxconsumetime = 2;
+  uint64 avgconsumetime = 3;
+  uint64 totalconsumetime = 4;
+  uint64 msgcount = 5;
+  uint64 totalmsgsize = 6;
+  string lasttime = 7;
+}
+message dmnode_xtotal {
+  uint64 totalsize = 1;
+}
+
+message dmmeta {
+    map<uint32, dmnode_xmsg> map_xmsg = 1;
+    dmnode_xtotal xtotal = 2;
+}
+
+// [END messages]
