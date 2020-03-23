@@ -26,22 +26,4 @@ ModuleInclude("asio" "thirdparty/asio")
 ModuleInclude("cinatra" "thirdparty/cinatra")
 ModuleImport("dmsys" "thirdparty/dmsys")
 
-LibImport("dmcinatra" "src/dmcinatra_module")
-ExeImport("test" "dmcinatra;dmsys")
-
-#ADD_CUSTOM_COMMAND(
-#TARGET dmcinatratest
-#PRE_BUILD
-#COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#${CMAKE_CURRENT_SOURCE_DIR}/config/test.csv
-#$<TARGET_FILE_DIR:dmcinatratest>
-#)
-
-#INSTALL(DIRECTORY include/ DESTINATION include)
-#INSTALL(TARGETS dmcinatra
-#        RUNTIME DESTINATION bin
-#        LIBRARY DESTINATION lib
-#        ARCHIVE DESTINATION lib)
-
-#SET(DMCINATRA_LIBS "dmcinatra")
-#MARK_AS_ADVANCED(${DMCINATRA_LIBS})
+ExeImport("test" "dmsys")
