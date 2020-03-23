@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/cinatra.hpp"
+#include "cinatra.hpp"
 
 using namespace cinatra;
 
