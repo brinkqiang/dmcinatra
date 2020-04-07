@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# - install depends tools
-# yum -y install git
-# yum -y install gcc gcc-c++ autoconf libtool automake make
-#
+# sudo yum -y install uuid-devel
+# sudo apt -y install uuid-dev
 
 # - clone code
 # git clone https://github.com/brinkqiang/dmcinatra.git
