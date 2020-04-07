@@ -26,4 +26,4 @@ ModuleInclude("asio" "thirdparty/asio")
 ModuleInclude("cinatra" "thirdparty/cinatra")
 ModuleImport("dmsys" "thirdparty/dmsys")
 
-ExeImport("test" "dmsys")
+ExeImport("test" "dmsys;uuid")
