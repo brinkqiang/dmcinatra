@@ -356,7 +356,7 @@ static void DMSetWorkPath() {
 #endif
 }
 
-static void DMSetWorkPath(std::string& strPath) {
+static void DMSetWorkPath(const std::string& strPath) {
     chdir(strPath.c_str());
 }
 
