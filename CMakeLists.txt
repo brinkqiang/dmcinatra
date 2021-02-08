@@ -23,4 +23,4 @@ ADD_DEFINITIONS(-DGFLAGS_DLL_DECL=)
 ModuleInclude("asio" "thirdparty/asio")
 ModuleInclude("cinatra" "thirdparty/cinatra")
 
-ExeImport("test" "uuid")
+ExeImport("test" "")
