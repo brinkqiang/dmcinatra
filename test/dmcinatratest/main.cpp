@@ -55,7 +55,7 @@ struct person
 
 int main() {
 
-	DMSetWorkPath(DMGetRootPath() + ".." + PATH_DELIMITER_STR + "www");
+	DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR + "www");
 
 	nanolog::initialize(nanolog::GuaranteedLogger(), "/tmp/", "nanolog", 1);
 	const int max_thread_num = 4;
@@ -116,7 +116,7 @@ int main() {
         res.set_attr("number",1024);
         res.set_attr("test_text","hello,world");
         res.set_attr("header_text","你好 cinatra");
-		res.render_view("./www/test.html");
+		res.render_view("./test.html");
 	});
 
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {
