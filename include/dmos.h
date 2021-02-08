@@ -55,12 +55,10 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include <memory>
-
-#include <winsock2.h>
-
 
 #include <windows.h>
+#include <winsock2.h>
+
 #include <direct.h>
 #include <process.h>
 #include <conio.h>
@@ -104,7 +102,6 @@ using namespace stdext;
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include <memory>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -146,12 +143,8 @@ using namespace stdext;
 
 #ifdef WIN32
 #define DMAPI __stdcall
-typedef HANDLE DMHANDLE;
-#define DMINVALID_HANDLE  NULL
 #else
 #define DMAPI
-typedef int DMHANDLE;
-#define DMINVALID_HANDLE  0
 #endif
 
 #endif // __DMOS_H_INCLUDE__
