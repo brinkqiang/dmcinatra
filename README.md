@@ -1,6 +1,3 @@
-# dmcinatra
-based on cinatra
-
 # cinatra--一个高效易用的c++ http框架
 
 <p align="center">
@@ -8,6 +5,8 @@ based on cinatra
 </p>
 
 # 目录
+
+## [使用cinatra常见问题汇总(FAQ)](https://github.com/qicosmos/cinatra/wiki)
 
 * [cinatra简介](#cinatra简介)
 * [如何使用](#如何使用)
@@ -27,16 +26,22 @@ based on cinatra
 5. 支持面向切面编程
 
 cinatra目前支持了http1.1/1.0, ssl和websocket, 你可以用它轻易地开发一个http服务器，比如常见的数据库访问服务器、文件上传下载服务器、实时消息推送服务器，你也可以基于cinatra开发一个mqtt服务器。
+cinatra是世界上性能最好的http服务器之一，性能测试详见[性能测试](#性能测试)
+
+## 谁在用cinatra
+
+cinatra目前被很多公司在使用，在这里可以看到[谁在用cinatra](https://github.com/qicosmos/cinatra/wiki/%E8%B0%81%E5%9C%A8%E7%94%A8cinatra).
 
 # 如何使用
 
 ## 编译依赖
 cinatra是基于boost.asio开发的，所以需要boost库。不过，cinatra同时也支持了ASIO_STANDALONE，你不必一定需要boost库。
 
-cinatra需要支持c++17的编译器，依赖项：
+cinatra需要的依赖项：
 
-1. boost.asio
-2. c++17编译器(gcc7.2,clang4.0, vs2017 update15.5)
+1. C++17 编译器 (gcc 7.2, clang 4.0, Visual Studio 2017 update 15.5,或者更高的版本)
+2. Boost.Asio(或者独立的 Asio)
+3. Boost.System
 
 ## 使用
 cinatra是header-only的，直接引用头文件既可。
@@ -198,8 +203,11 @@ cinatra目前支持了multipart和octet-stream格式的上传。
 
 ## 示例5：文件下载
 
+    cinatra提供下载功能非常简单，不需要编写代码，具体方法：
+    1. 启动cinatra server
+    2. 将要下载的文件放到http server同一级的www目录下即可。
+    3. 如何下载：如果你把test.txt放到www之后，那么直接通过http://127.0.0.1:8090/test.txt下载即可。
 	//chunked download
-	//http://127.0.0.1:8080/assets/show.jpg
 	//cinatra will send you the file, if the file is big file(more than 5M) the file will be downloaded by chunked. support continues download
 
 ## 示例6：websocket
@@ -223,16 +231,12 @@ cinatra目前支持了multipart和octet-stream格式的上传。
 				auto part_data = req.get_part_data();
 				//echo
 				std::string str = std::string(part_data.data(), part_data.length());
-				req.get_conn()->send_ws_string(std::move(str));
+				req.get_conn<cinatra::NonSSL>()->send_ws_string(std::move(str));
 				std::cout << part_data.data() << std::endl;
 			});
-	
-			req.on(ws_close, [](request& req) {
-				std::cout << "websocket close" << std::endl;
-			});
-	
+
 			req.on(ws_error, [](request& req) {
-				std::cout << "websocket error" << std::endl;
+				std::cout << "websocket pack error or network error" << std::endl;
 			});
 		});
 
@@ -270,37 +274,168 @@ cinatra目前支持了multipart和octet-stream格式的上传。
 		return 0;
 	}
 
+## cinatra客户端使用
+
+### 同步发get/post消息
+同步和异步发送接口都是返回response_data，它有4个字段分别是：网络错误码、http状态码、返回的消息、返回的header。
+```
+void print(const response_data& result) {
+    print(result.ec, result.status, result.resp_body, result.resp_headers.second);
+}
+
+void test_sync_client() {
+    auto client = cinatra::client_factory::instance().new_client();
+    std::string uri = "http://www.baidu.com";
+    std::string uri1 = "http://cn.bing.com";
+    std::string uri2 = "https://www.baidu.com";
+    std::string uri3 = "https://cn.bing.com";
+    
+    response_data result = client->get(uri);
+    print(result);
+
+    response_data result1 = client->get(uri1);
+    print(result1);
+
+    print(client->post(uri, "hello"));
+    print(client->post(uri1, "hello"));
+
+#ifdef CINATRA_ENABLE_SSL
+    response_data result2 = client->get(uri2);
+    print(result2);
+
+    response_data result3 = client->get(uri3);
+    print(result3);
+
+    response_data result4 = client->get(uri3);
+    print(result4);
+
+    response_data result5 = client->get(uri2);
+    print(result5);
+#endif
+}
+```
+
+### 异步发get/post消息
+
+```
+void test_async_client() {
+    
+    std::string uri = "http://www.baidu.com";
+    std::string uri1 = "http://cn.bing.com";
+    std::string uri2 = "https://www.baidu.com";
+    std::string uri3 = "https://cn.bing.com";
+
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->async_get(uri, [](response_data data) {
+            print(data);
+        });
+    }
+    
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->async_get(uri1, [](response_data data) {
+            print(data);
+        });
+    }
+
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->async_post(uri, "hello", [](response_data data) {
+            print(data);
+        });
+    }
+
+#ifdef CINATRA_ENABLE_SSL
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->async_get(uri2, [](response_data data) {
+            print(data);
+        });
+    }
+
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->async_get(uri3, [](response_data data) {
+            print(data);
+        });
+    }
+#endif
+}
+```
+
+### 文件上传
+
+异步multipart文件上传。
+
+```
+void test_upload() {
+    std::string uri = "http://cn.bing.com/";
+    auto client = cinatra::client_factory::instance().new_client();
+    client->upload(uri, "boost_1_72_0.7z", [](response_data data) {
+        if (data.ec) {
+            std::cout << data.ec.message() << "\n";
+            return;
+        }
+
+        std::cout << data.resp_body << "\n"; //finished upload
+    });
+}
+```
+
+
+### 文件下载
+
+提供了两个异步chunked下载接口，一个是直接下载到文件，一个是chunk回调给用户，由用户自己去处理下载的chunk数据
+```
+void test_download() {
+    std::string uri = "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx";
+
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->download(uri, "test.jpg", [](response_data data) {
+            if (data.ec) {
+                std::cout << data.ec.message() << "\n";
+                return;
+            }
+
+            std::cout << "finished download\n";
+        });
+    }
+
+    {
+        auto client = cinatra::client_factory::instance().new_client();
+        client->download(uri, [](auto ec, auto data) {
+            if (ec) {
+                std::cout << ec.message() << "\n";
+                return;
+            }
+
+            if (data.empty()) {
+                std::cout << "finished all \n";
+            }
+            else {
+                std::cout << data.size() << "\n";
+            }
+        });
+    }
+}
+
+```
+
 
 # 性能测试
 ## 测试用例：
 
-ab测试：ab -c100 -n5000 127.0.0.1:8080/
+![qps](lang/qps.png "qps")
 
-服务器返回一个hello。
-
-在一个8核心16G的云主机上测试，qps在9000-13000之间。
-
-## 对比测试
-通过ab测试和boost.beast做对比，二者qps相当，大概是因为二者都是基于boost.asio开发的的原因。cinatra目前还没做专门的性能优化，还有提升空间。
-
+![qps-pipeline](lang/qps-pipeline.png "qps-pipeline")
 
 # 注意事项
 
 websocket的业务函数是会多次进入的，因此写业务逻辑的时候需要注意，推荐按照示例中的方式去做。
 
-cinatra目前刚开始在生产环境中使用, 还处于开发完善阶段，可能还有一些bug，因此不建议现阶段直接用于生产环境，建议先在测试环境下试用。
-
-试用没问题了再在生产环境中使用，试用过程中发现了问题请及时提issue反馈或者邮件联系我。
-
-测试和使用稳定之后cinatra会发布正式版。
-
-# roadmap
-
-1. 增加一个基本的client用于server之间的通信
-
-我希望有越来越多的人使用cinatra并喜欢它，也希望cinatra在使用过程中越来越完善，变成一个强大易用、快速开发的http框架，欢迎大家积极参与cinatra项目，可以提issue也可以发邮件提建议，也可以提pr，形式不限。
-
-这次重构的cinatra几乎是重写了一遍，代码比之前的少了30%以上，接口统一了，http和业务分离，具备更好的扩展性和可维护性。
+在小内存机器上可以增加gcc编译选项 --param ggc-min-expand=8192 --param ggc-min-heapsize=24000。
 
 # 联系方式
 
