@@ -79,18 +79,18 @@ int main() {
 
 	person p{ 2 };
 	server.set_http_handler<GET, POST>("/a", &person::foo, enable_cache{ false }, log_t{});
-//	server.set_http_handler<GET, POST>("/b", &person::foo1, log_t{}, enable_cache{ false });
+	server.set_http_handler<GET, POST>("/b", &person::foo1, log_t{}, enable_cache{ false });
 
     server.set_http_handler<GET, POST>("/string", [](request& req, response& res) {
         res.render_string(std::to_string(std::time(nullptr)));
     },enable_cache{true});
 
     server.set_http_handler<GET, POST>("/404", [](request& req, response& res) {
-        res.render_404();
+        res.set_status(status_type::not_found);
     },enable_cache{false});
 
     server.set_http_handler<GET, POST>("/404_custom", [](request& req, response& res) {
-        res.render_404("./404.html");
+        res.set_status(status_type::not_found);
     },enable_cache{false});
 
 	server.set_http_handler<GET, POST>("/login", [](request& req, response& res) {
@@ -104,33 +104,33 @@ int main() {
 		auto ptr = req.get_session();
 		auto session = ptr.lock();
 		if (session == nullptr || session->get_data<std::string>("userid") != "1") {
-			res.set_status_and_content(status_type::ok, "没有登录", res_content_type::string);
+			res.set_status_and_content(status_type::ok, "没有登录");
 			return;
 		}
-		res.set_status_and_content(status_type::ok, "已经登录", res_content_type::string);
+		res.set_status_and_content(status_type::ok, "已经登录");
 	},enable_cache{false});
 
 	server.set_http_handler<GET, POST>("/html", [](request& req, response& res) {
-        res.set_attr("number",1024);
-        res.set_attr("test_text","hello,world");
-        res.set_attr("header_text","你好 cinatra");
-		res.render_view("./test.html");
+        res.add_header("number","1024");
+        res.add_header("test_text","hello,world");
+        res.add_header("header_text","你好 cinatra");
+		//res.render_string("./test.html");
 	});
 
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {
-		nlohmann::json json;
-        res.add_header("Access-Control-Allow-Origin","*");
-		if(req.get_method()=="OPTIONS"){
-            res.add_header("Access-Control-Allow-Headers","Authorization");
-            res.render_string("");
-		}else{
-            json["abc"] = "abc";
-            json["success"] = true;
-            json["number"] = 100.005;
-            json["name"] = "中文";
-            json["time_stamp"] = std::time(nullptr);
-            res.render_json(json);
-		}
+		//nlohmann::json json;
+  //      res.add_header("Access-Control-Allow-Origin","*");
+		//if(req.get_method()=="OPTIONS"){
+  //          res.add_header("Access-Control-Allow-Headers","Authorization");
+  //          res.render_string("");
+		//}else{
+  //          json["abc"] = "abc";
+  //          json["success"] = true;
+  //          json["number"] = 100.005;
+  //          json["name"] = "中文";
+  //          json["time_stamp"] = std::time(nullptr);
+            //res.render_string(json);
+		//}
 	});
 
 	server.set_http_handler<GET,POST>("/redirect",[](request& req, response& res){
@@ -143,19 +143,19 @@ int main() {
 	});
 
 	server.set_http_handler<GET, POST>("/restype", [](request& req, response& res) {
-		auto type = req.get_query_value("type");
-		auto res_type = cinatra::res_content_type::string;
-		if (type == "html")
-		{
-			res_type = cinatra::res_content_type::html;
-		}
-		else if (type == "json") {
-			res_type = cinatra::res_content_type::json;
-		}
-		else if (type == "string") {
-			//do not anything;
-		}
-		res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type);
+		//auto type = req.get_query_value("type");
+		//auto res_type = cinatra::res_content_type::string;
+		//if (type == "html")
+		//{
+		//	res_type = cinatra::res_content_type::html;
+		//}
+		//else if (type == "json") {
+		//	res_type = cinatra::res_content_type::json;
+		//}
+		//else if (type == "string") {
+		//	//do not anything;
+		//}
+		//res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type);
 	});
 
 	server.set_http_handler<GET, POST>("/getzh", [](request& req, response& res) {
@@ -166,7 +166,7 @@ int main() {
 	server.set_http_handler<GET, POST>("/gzip", [](request& req, response& res) {
 		auto body = req.body();
 		std::cout << body.data() << std::endl;
-		res.set_status_and_content(status_type::ok, "hello world", res_content_type::none, content_encoding::gzip);
+		res.set_status_and_content(status_type::ok, "hello world", req_content_type::none, content_encoding::gzip);
 	});
 
 
@@ -179,7 +179,7 @@ int main() {
 
 		auto id = req.get_query_value("id");
 		if (id.empty()) {
-			res.render_404();
+			res.set_status(status_type::not_found);
 			return;
 		}
 		res.render_string("hello world");
@@ -202,7 +202,7 @@ int main() {
 			auto part_data = req.get_part_data();
 			//echo
 			std::string str = std::string(part_data.data(), part_data.length());
-			req.get_conn()->send_ws_string(std::move(str));
+			req.get_conn<cinatra::NonSSL>()->send_ws_string(std::move(str));
 			std::cout << part_data.data() << std::endl;
 		});
 
