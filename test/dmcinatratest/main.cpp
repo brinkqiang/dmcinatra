@@ -151,7 +151,6 @@ int main() {
 		{
 			res_type = cinatra::req_content_type::html;
 			res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type, content_encoding::none);
-
 		}
 		else if (type == "json") {
 			res_type = cinatra::req_content_type::json;
