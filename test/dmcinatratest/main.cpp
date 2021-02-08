@@ -22,7 +22,7 @@ struct check {
 	bool before(request& req, response& res) {
 		std::cout << "before check" << std::endl;
 		if (req.get_header_value("name").empty()) {
-			res.render_404();
+			res.set_status_and_content(status_type::bad_request);
 			return false;
 		}
 
@@ -57,7 +57,6 @@ int main() {
 
 	DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR + "www");
 
-	nanolog::initialize(nanolog::GuaranteedLogger(), "/tmp/", "nanolog", 1);
 	const int max_thread_num = 4;
 	http_server server(max_thread_num);
 #ifdef CINATRA_ENABLE_SSL
@@ -67,11 +66,10 @@ int main() {
 	bool r = server.listen("0.0.0.0", "8080");
 #endif
 	if (!r) {
-		LOG_INFO << "listen failed";
 		return -1;
 	}
 
-    server.set_base_path("base_path","/feather");
+    //server.set_base_path("base_path","/feather");
 	server.enable_http_cache(false);//set global cache
     server.set_res_cache_max_age(86400);
 	server.set_cache_max_age(5);

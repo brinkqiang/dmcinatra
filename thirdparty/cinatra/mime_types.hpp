@@ -488,12 +488,14 @@ namespace cinatra {
 	{ ".zac", "application/x-zaurus-zac" },
 	{ ".zip", "application/zip" },
 	{ ".json", "application/json" },
+    { ".7z", "application/x-7z-compressed" },
 	};
 
-	static std::map<cinatra::res_content_type,std::string_view> res_mime_map = {
-			{cinatra::res_content_type::html,"text/html; charset=utf8"},
-			{cinatra::res_content_type::json,"application/json; charset=utf8"},
-			{cinatra::res_content_type::string,"text/plain; charset=utf8"}
+	static std::map<cinatra::req_content_type,std::string_view> res_mime_map = {
+			{cinatra::req_content_type::html,"text/html; charset=UTF-8"},
+			{cinatra::req_content_type::json,"application/json; charset=UTF-8"},
+			{cinatra::req_content_type::string,"text/plain; charset=UTF-8"},
+			{cinatra::req_content_type::multipart,"multipart/form-data; boundary="}
 	};
 
 	inline std::string_view get_mime_type(std::string_view extension) {

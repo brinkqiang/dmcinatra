@@ -160,7 +160,7 @@ static const char *token_char_map = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\
 "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
-static const char *findchar_fast(const char *buf, const char *buf_end, const char *ranges, size_t ranges_size, int *found) {
+static const char *findchar_fast(const char *buf, const char *buf_end, const char *ranges, int ranges_size, int *found) {
 	*found = 0;
 #if __SSE4_2__
 	if (likely(buf_end - buf >= 16)) {
@@ -445,12 +445,12 @@ inline int phr_parse_request(const char *buf_start, size_t len, const char **met
 		return r;
 	}
 
-	if ((buf = parse_request(buf, buf_end, method, method_len, path, path_len, minor_version, headers, num_headers, max_headers,
+	if ((buf = parse_request(buf+last_len, buf_end, method, method_len, path, path_len, minor_version, headers, num_headers, max_headers,
 		&r)) == NULL) {
 		return r;
 	}
 
-	return (int)(buf - buf_start);
+	return (int)(buf - buf_start - last_len);
 }
 
 inline const char *parse_response(const char *buf, const char *buf_end, int *minor_version, int *status, const char **msg,

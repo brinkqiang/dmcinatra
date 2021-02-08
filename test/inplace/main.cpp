@@ -8,7 +8,7 @@ int main() {
 	DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR + "www");
 
 	bool is_running = true;
-	http_server_<io_service_inplace> server;
+	http_server server(std::thread::hardware_concurrency());
 	server.listen("8080");
 
 	server.set_http_handler<GET, POST>("/", [](request& req, response& res) {

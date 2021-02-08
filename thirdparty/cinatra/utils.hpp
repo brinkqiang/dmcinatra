@@ -1,4 +1,4 @@
-﻿//
+//
 // Created by qiyu on 12/19/17.
 //
 
@@ -104,10 +104,89 @@ namespace cinatra {
 		return v;
 	}
 
+    inline std::pair<std::string_view, std::string_view> get_domain_url(std::string_view path) {
+        size_t size = path.size();
+        size_t pos = std::string_view::npos;
+        for (size_t i = 0; i < size; i++) {
+            if (path[i] == '/') {
+                if (i == size - 1) {
+                    pos = i;
+                    break;
+                }
+
+                if (i + 1 < size - 1 && path[i + 1] == '/') {
+                    i++;
+                    continue;
+                }
+                else {
+                    pos = i;
+                    break;
+                }
+            }
+        }
+
+        if (pos == std::string_view::npos) {
+            return { path, "/" };
+        }
+
+        std::string_view host = path.substr(0, pos);
+        std::string_view url = path.substr(pos);
+        if (url.length() > 1 && url.back() == '/') {
+            url = url.substr(0, url.length() - 1);
+        }
+
+        return { host, url };
+    }
+    inline std::string_view remove_www(std::string_view path) {
+        if (path.back() == '/') {
+            path = std::string_view(path.data(), path.length() - 1);
+        }
+        if (path.find("www.") != std::string_view::npos)
+            return path.substr(4);
+
+        return path;
+    }
+
+    inline std::pair<std::string, std::string> get_host_port(std::string_view path, bool is_ssl) {
+        std::string_view old_path = path;
+        size_t pos = path.rfind(':');
+        if (pos == std::string_view::npos) {
+            if (path.find("https") != std::string_view::npos) {
+                return { std::string(remove_www(path)), "https" };
+            }
+
+            return { std::string(remove_www(path)), is_ssl ? "https" : "http" };
+        }
+
+        if (pos > path.length() - 1) {
+            return {};
+        }
+
+        if (path.find("http") != std::string_view::npos) {
+            size_t pos1 = path.find(':');
+            if (pos1 + 3 > path.length() - 1)
+                return {};
+
+            path = path.substr(pos1 + 3);
+            if (pos >= (pos1 + 3))
+                pos -= (pos1 + 3);
+        }
+
+        if (old_path[pos - 1] == 'p') {
+            return { std::string(remove_www(path)), "http" };
+        }
+        else if (old_path[pos - 1] == 's') {
+            return { std::string(remove_www(path)), "https" };
+        }
+
+        return { std::string(path.substr(0, pos)), std::string(path.substr(pos + 1)) };
+    }
+
 	template<typename T>
 	constexpr bool  is_int64_v = std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t>;
 
 	enum class http_method {
+        UNKNOW,
 		DEL,
 		GET,
 		HEAD,
@@ -125,6 +204,11 @@ namespace cinatra {
 	constexpr inline auto CONNECT = http_method::CONNECT;
 	constexpr inline auto TRACE = http_method::TRACE;
 	constexpr inline auto OPTIONS = http_method::OPTIONS;
+
+    enum class transfer_type {
+        CHUNKED,
+        ACCEPT_RANGES
+    };
 
 	inline constexpr std::string_view method_name(http_method mthd) {
 		switch (mthd)
@@ -159,6 +243,29 @@ namespace cinatra {
 		}
 	}
 
+    inline std::string get_content_type_str(req_content_type type) {
+        std::string str;
+        switch (type) {
+        case req_content_type::html:
+            str = "text/html; charset=UTF-8";
+            break;
+        case req_content_type::json:
+            str = "application/json; charset=UTF-8";
+            break;
+        case req_content_type::string:
+            str = "text/html; charset=UTF-8";
+            break;
+        case req_content_type::multipart:
+            str = "multipart/form-data; boundary=";
+            break;
+        case req_content_type::none:
+        default:
+            break;
+        }
+
+        return str;
+    }
+
 	constexpr auto type_to_name(std::integral_constant<http_method, http_method::DEL>) noexcept { return "DELETE"sv; }
 	constexpr auto type_to_name(std::integral_constant<http_method, http_method::GET>) noexcept { return "GET"sv; }
 	constexpr auto type_to_name(std::integral_constant<http_method, http_method::HEAD>) noexcept { return "HEAD"sv; }
@@ -181,6 +288,18 @@ namespace cinatra {
 
 		return true;
 	}
+
+    inline bool iequal(const char *s, size_t l, const char *t, size_t size) {
+        if (size != l)
+            return false;
+
+        for (size_t i = 0; i < l; i++) {
+            if (std::tolower(s[i]) != std::tolower(t[i]))
+                return false;
+        }
+
+        return true;
+    }
 
 	template<typename T>
 	inline bool find_strIC(const T & src, const T & dest)
@@ -217,6 +336,16 @@ namespace cinatra {
 		str.erase(std::remove(str.begin(), str.end(), ch), str.end());
 	}
 
+    template<typename... Args>
+    inline void print(Args... args) {
+        ((std::cout << args << ' '), ...);
+        std::cout << "\n";
+    }
+
+    inline void print(const boost::system::error_code& ec) {
+        print(ec.value(), ec.message());
+    }
+
     // var bools = [];
     // var valid_chr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-';
     // for(var i = 0; i <= 127; ++ i) {
@@ -224,7 +353,6 @@ namespace cinatra {
     // 	bools.push(contain?false:true);
     // }
     // console.log(JSON.stringify(bools))
-    // 浏览器运行 js 生成 valid_chr 数组
 
     inline const constexpr bool valid_chr[128] =
     {
@@ -294,11 +422,28 @@ namespace cinatra {
 		return name.substr(pos);
 	}
 
+    inline bool is_status_ok(int status) {
+        return (status == 200) || (status >= 301 && status <= 307 && status != 306);
+    }
+
 	inline std::string to_hex_string(std::size_t value) {
 		std::ostringstream stream;
 		stream << std::hex << value;
 		return stream.str();
 	}
+
+    inline int64_t hex_to_int(std::string_view s) {
+        if (s.empty())
+            return -1;
+
+        char* p;
+        int64_t n = strtoll(s.data(), &p, 16);
+        if (n == 0 && s.front() != '0') {
+            return -1;
+        }
+
+        return n;
+    }
 	inline const char *MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		"abcdefghijklmnopqrstuvwxyz"
 		"0123456789+/";
@@ -486,6 +631,15 @@ namespace cinatra {
 		std::array<std::string, sizeof...(Is)> arr = {};
 		size_t index = 0;
 		(get_str<Is>(arr[index++], name), ...);
+
+		return arr;
+	}
+
+	template<http_method... Is>
+	constexpr auto get_method_arr() {
+		std::array<char, 26> arr{0};
+		std::string_view s;
+		((s = type_to_name(std::integral_constant<http_method, Is>{}), arr[s[0]-65] = s[0]), ...);
 
 		return arr;
 	}
