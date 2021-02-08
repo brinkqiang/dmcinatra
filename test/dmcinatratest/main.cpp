@@ -144,19 +144,27 @@ int main() {
 	});
 
 	server.set_http_handler<GET, POST>("/restype", [](request& req, response& res) {
-		//auto type = req.get_query_value("type");
-		//auto res_type = cinatra::res_content_type::string;
-		//if (type == "html")
-		//{
-		//	res_type = cinatra::res_content_type::html;
-		//}
-		//else if (type == "json") {
-		//	res_type = cinatra::res_content_type::json;
-		//}
-		//else if (type == "string") {
-		//	//do not anything;
-		//}
-		//res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type);
+		//http://127.0.0.1:8080/restype?type=html
+		auto type = req.get_query_value("type");
+		auto res_type = cinatra::req_content_type::string;
+		if (type == "html")
+		{
+			res_type = cinatra::req_content_type::html;
+			res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type, content_encoding::none);
+
+		}
+		else if (type == "json") {
+			res_type = cinatra::req_content_type::json;
+			nlohmann::json json;
+			json["a"] = "hello world 百度";
+			json["href"] = "http://www.baidu.com";
+			res.set_status_and_content(status_type::ok, json.dump(), res_type, content_encoding::none);
+		}
+		else if (type == "string") {
+			//do not anything;
+            res_type = cinatra::req_content_type::string;
+			res.set_status_and_content(status_type::ok, "<a href='http://www.baidu.com'>hello world 百度</a>", res_type, content_encoding::none);
+		}
 	});
 
 	server.set_http_handler<GET, POST>("/getzh", [](request& req, response& res) {
