@@ -22,18 +22,6 @@
 #ifndef __DMCINATRA_H_INCLUDE__
 #define __DMCINATRA_H_INCLUDE__
 
-#include "dmos.h"
+#include "cinatra.hpp"
 
-class Idmcinatra
-{
-public:
-    virtual ~Idmcinatra(){}
-    virtual void DMAPI Release(void) = 0;
-	
-    virtual void DMAPI Test(void) = 0;
-};
-
-Idmcinatra* DMAPI dmcinatraGetModule();
-
-typedef Idmcinatra* (DMAPI* PFN_dmcinatraGetModule)();
 #endif // __DMCINATRA_H_INCLUDE__
