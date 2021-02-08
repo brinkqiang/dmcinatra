@@ -23,5 +23,6 @@
 #define __DMCINATRA_H_INCLUDE__
 
 #include "cinatra.hpp"
+#include "render.h"
 
 #endif // __DMCINATRA_H_INCLUDE__

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "cinatra.hpp"
+#include "dmcinatra.hpp"
 #include "dmutil.h"
 
 using namespace cinatra;
@@ -111,26 +111,27 @@ int main() {
 	},enable_cache{false});
 
 	server.set_http_handler<GET, POST>("/html", [](request& req, response& res) {
-        res.add_header("number","1024");
-        res.add_header("test_text","hello,world");
-        res.add_header("header_text","你好 cinatra");
-		//res.render_string("./test.html");
+		nlohmann::json json;
+        json["number"] = 1024;
+        json["test_text"] = "hello,world";
+        json["header_text"] = "你好 cinatra";
+		res.render_string(render::render_file("./test.html", json));
 	});
 
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {
-		//nlohmann::json json;
-  //      res.add_header("Access-Control-Allow-Origin","*");
-		//if(req.get_method()=="OPTIONS"){
-  //          res.add_header("Access-Control-Allow-Headers","Authorization");
-  //          res.render_string("");
-		//}else{
-  //          json["abc"] = "abc";
-  //          json["success"] = true;
-  //          json["number"] = 100.005;
-  //          json["name"] = "中文";
-  //          json["time_stamp"] = std::time(nullptr);
-            //res.render_string(json);
-		//}
+		nlohmann::json json;
+        res.add_header("Access-Control-Allow-Origin","*");
+		if(req.get_method()=="OPTIONS"){
+            res.add_header("Access-Control-Allow-Headers","Authorization");
+            res.render_string("");
+		}else{
+            json["abc"] = "abc";
+            json["success"] = true;
+            json["number"] = 100.005;
+            json["name"] = "中文";
+            json["time_stamp"] = std::time(nullptr);
+            res.render_string(json.dump());
+		}
 	});
 
 	server.set_http_handler<GET,POST>("/redirect",[](request& req, response& res){
