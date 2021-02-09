@@ -55,7 +55,7 @@ struct person
 
 int main() {
 
-	DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR + "www");
+    DMSetWorkPath(DMGetRootPath());
 
 	const int max_thread_num = 4;
 	http_server server(max_thread_num);
@@ -115,7 +115,7 @@ int main() {
         json["number"] = 1024;
         json["test_text"] = "hello,world";
         json["header_text"] = "你好 cinatra";
-		res.render_string(render::render_file("./test.html", json));
+		res.render_string(render::render_file("../www/test.html", json));
 	});
 
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {

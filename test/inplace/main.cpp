@@ -5,7 +5,7 @@
 using namespace cinatra;
 
 int main() {
-	DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR + "www");
+    DMSetWorkPath(DMGetRootPath());
 
 	bool is_running = true;
 	http_server server(std::thread::hardware_concurrency());
