@@ -10,6 +10,8 @@ void print(const response_data& result) {
 
 int main()
 {
+    DMSetWorkPath(DMGetRootPath());
+
     std::string uri = "http://www.baidu.com";
     std::string uri1 = "http://cn.bing.com";
     std::string uri2 = "https://www.baidu.com";
@@ -51,6 +53,9 @@ int main()
         });
     }
 #endif
-
+    while(1)
+    {
+        SleepMs(1);
+    }
     return 0;
 }

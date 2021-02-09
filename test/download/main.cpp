@@ -6,6 +6,8 @@ using namespace cinatra;
 
 int main()
 {
+    DMSetWorkPath(DMGetRootPath());
+
     std::string uri = "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx";
 
     {
@@ -36,6 +38,9 @@ int main()
             }
         });
     }
-
+    while (1)
+    {
+        SleepMs(1);
+    }
     return 0;
 }
