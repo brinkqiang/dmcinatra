@@ -118,6 +118,10 @@ int main() {
 		res.render_string(render::render_file("../www/test.html", json));
 	});
 
+    server.set_http_handler<GET, POST>("/index.html", [](request& req, response& res) {
+        res.render_string(render::render_file("../www/index.html"));
+    });
+
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {
 		nlohmann::json json;
         res.add_header("Access-Control-Allow-Origin","*");
