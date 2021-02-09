@@ -10,7 +10,7 @@ void print(const response_data& result) {
 
 int main()
 {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
     auto client = cinatra::client_factory::instance().new_client();
     std::string uri = "http://www.baidu.com";

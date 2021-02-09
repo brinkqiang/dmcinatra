@@ -5,7 +5,7 @@
 using namespace cinatra;
 
 int main() {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
 	http_server server(std::thread::hardware_concurrency());
 	server.listen("0.0.0.0", "8080");

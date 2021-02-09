@@ -4,7 +4,7 @@
 using namespace cinatra;
 
 int main() {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
 	int max_thread_num = std::thread::hardware_concurrency();
 	http_server server(max_thread_num);

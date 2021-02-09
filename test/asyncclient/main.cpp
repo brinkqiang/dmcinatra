@@ -10,7 +10,7 @@ void print(const response_data& result) {
 
 int main()
 {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
     std::string uri = "http://www.baidu.com";
     std::string uri1 = "http://cn.bing.com";

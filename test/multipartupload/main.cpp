@@ -6,7 +6,7 @@ using namespace cinatra;
 
 int main()
 {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
     std::string uri = "http://cn.bing.com/";
     auto client = cinatra::client_factory::instance().new_client();

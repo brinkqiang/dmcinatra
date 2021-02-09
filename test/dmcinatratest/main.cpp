@@ -55,7 +55,7 @@ struct person
 
 int main() {
 
-    DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR);
+    DMSetWorkPath();
 
 	const int max_thread_num = 4;
 	http_server server(max_thread_num);

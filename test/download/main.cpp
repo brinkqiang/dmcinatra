@@ -6,7 +6,7 @@ using namespace cinatra;
 
 int main()
 {
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath();
 
     std::string uri = "http://www.httpwatch.com/httpgallery/chunked/chunkedimage.aspx";
 
