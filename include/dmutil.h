@@ -351,7 +351,7 @@ static void DMSetWorkPath() {
     std::string strPath = DMGetRootPath() + "\\..\\";
     chdir(strPath.c_str());
 #else
-    std::string strPath = DMGetRootPath();
+    std::string strPath = DMGetRootPath() + "/../";
     chdir(strPath.c_str());
 #endif
 }
