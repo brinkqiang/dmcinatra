@@ -6,6 +6,8 @@
 #define CINATRA_SESSION_UTILS_HPP
 #include "session.hpp"
 #include "request.hpp"
+#include "dmsnowflake.hpp"
+
 namespace cinatra {
 	class session_manager {
 	public:
@@ -16,12 +18,7 @@ namespace cinatra {
 
 		std::shared_ptr<session> create_session(const std::string& name, std::size_t expire, 
 			const std::string& path = "/", const std::string& domain = ""){
-            auto tp = std::chrono::high_resolution_clock::now();
-            auto nano = tp.time_since_epoch().count();
-            auto id = std::hash<std::thread::id>{}(std::this_thread::get_id());
-            id_++;
-            std::string uuid_str = std::to_string(nano) + std::to_string(id_);
-
+            std::string uuid_str = std::to_string(id_.GetNextID());
 			auto s = std::make_shared<session>(name, uuid_str, expire, path, domain);
 
 			{
@@ -83,7 +80,8 @@ namespace cinatra {
 		std::map<std::string, std::shared_ptr<session>> map_;
 		std::mutex mtx_;
 		int max_age_ = 0;
-        std::atomic_int64_t id_ = 0;
+        //std::atomic_int64_t id_ = 0;
+		CDMIDGenerator id_;
 	};
 }
 #endif //CINATRA_SESSION_UTILS_HPP
