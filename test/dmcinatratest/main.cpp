@@ -55,7 +55,7 @@ struct person
 
 int main() {
 
-    DMSetWorkPath(DMGetRootPath());
+    DMSetWorkPath(DMGetRootPath() + PATH_DELIMITER_STR + ".." + PATH_DELIMITER_STR);
 
 	const int max_thread_num = 4;
 	http_server server(max_thread_num);
@@ -110,16 +110,18 @@ int main() {
 		res.set_status_and_content(status_type::ok, "已经登录");
 	},enable_cache{false});
 
-	server.set_http_handler<GET, POST>("/html", [](request& req, response& res) {
+	server.set_http_handler<GET, POST>("/test.html", [](request& req, response& res) {
 		nlohmann::json json;
         json["number"] = 1024;
         json["test_text"] = "hello,world";
-        json["header_text"] = "你好 cinatra";
-		res.render_string(render::render_file("../www/test.html", json));
+        json["header_text"] = "hello cinatra";
+		res.set_status(status_type::ok);
+		res.set_status_and_content(status_type::ok, render::render_file("./www/test.html", json), cinatra::req_content_type::html);
 	});
 
     server.set_http_handler<GET, POST>("/index.html", [](request& req, response& res) {
-        res.render_string(render::render_file("../www/index.html"));
+		res.add_header("Content-Type", "text/html; charset=utf-8");
+		res.set_status_and_content(status_type::ok, render::render_file("./www/index.html"), cinatra::req_content_type::html);
     });
 
 	server.set_http_handler<GET, POST,OPTIONS>("/json", [](request& req, response& res) {
@@ -199,7 +201,7 @@ int main() {
 
 	//aspect
 	server.set_http_handler<GET, POST>("/aspect", [](request& req, response& res) {
-		res.render_string("hello world");
+		res.render_string("强竹萱 你好啊!");
 	}, check{}, log_t{});
 
 	//web socket

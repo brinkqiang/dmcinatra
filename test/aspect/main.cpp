@@ -36,7 +36,7 @@ struct check {
 };
 
 int main() {
-    DMSetWorkPath(DMGetRootPath());
+	DMSetWorkPath(DMGetRootPath());
 
 	http_server server(std::thread::hardware_concurrency());
 	server.listen("0.0.0.0", "8080");
