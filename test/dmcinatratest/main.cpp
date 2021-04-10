@@ -201,7 +201,7 @@ int main() {
 
 	//aspect
 	server.set_http_handler<GET, POST>("/aspect", [](request& req, response& res) {
-		res.render_string("强竹萱 你好啊!");
+		res.render_string("你好啊!");
 	}, check{}, log_t{});
 
 	//web socket
