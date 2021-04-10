@@ -24,7 +24,6 @@ ADD_DEFINITIONS(-DGFLAGS_DLL_DECL=)
 ModuleInclude("asio" "thirdparty/asio")
 ModuleInclude("cinatra" "thirdparty/cinatra")
 
-
 IF(WIN32)
     ExeImport("test" "")
 ELSE(UNIX)
