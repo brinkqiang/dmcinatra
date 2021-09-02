@@ -161,22 +161,22 @@ private:
 };
 
 
-CDMIDGenerator::CDMIDGenerator(int region_id, int worker_id)
+inline CDMIDGenerator::CDMIDGenerator(int region_id, int worker_id)
     : m_oImpl(new CDMIDGeneratorImpl(region_id, worker_id))
 {
 
 }
 
-CDMIDGenerator::~CDMIDGenerator()
+inline CDMIDGenerator::~CDMIDGenerator()
 {
 }
 
-void CDMIDGenerator::Init(int region_id, int worker_id) 
+inline void CDMIDGenerator::Init(int region_id, int worker_id) 
 {
 	m_oImpl.reset(new CDMIDGeneratorImpl(region_id, worker_id));
 }
 
-uint64_t CDMIDGenerator::GetNextID()
+inline uint64_t CDMIDGenerator::GetNextID()
 {
     return m_oImpl->GetNextID();
 }
