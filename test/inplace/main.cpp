@@ -7,7 +7,7 @@ using namespace cinatra;
 int main() {
     DMSetWorkPath();
 
-	bool is_running = true;
+	volatile bool is_running = true;
 	http_server server(std::thread::hardware_concurrency());
 	server.listen("8080");
 
