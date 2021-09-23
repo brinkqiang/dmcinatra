@@ -328,5 +328,6 @@ int main()
     //http://127.0.0.1:8080/assets/show.jpg
     //cinatra will send you the file, if the file is big file(more than 5M) the file will be downloaded by chunked
     server.run();
+    std::cout << "Done" << std::endl;
     return 0;
 }
