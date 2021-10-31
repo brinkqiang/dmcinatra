@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "dmcinatra.hpp"
 #include "dmutil.h"
 
@@ -57,8 +58,7 @@ int main() {
 
     DMSetWorkPath();
 
-	const int max_thread_num = 4;
-	http_server server(max_thread_num);
+	http_server server(std::thread::hardware_concurrency());
 #ifdef CINATRA_ENABLE_SSL
 	server.init_ssl_context(true, [](auto, auto) { return "123456"; }, "server.crt", "server.key", "dh1024.pem");
 	bool r = server.listen("0.0.0.0", "https");
