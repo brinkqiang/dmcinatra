@@ -8,9 +8,9 @@ int main()
 {
     DMSetWorkPath();
 
-    std::string uri = "http://cn.bing.com/";
+    std::string uri = "http://127.0.0.1:8080";
     auto client = cinatra::client_factory::instance().new_client();
-    client->upload(uri, "boost_1_72_0.7z", [](response_data data) {
+    client->upload(uri, "multipartupload.exe", [](response_data data) {
         if (data.ec) {
             std::cout << data.ec.message() << "\n";
             return;
@@ -18,6 +18,6 @@ int main()
 
         std::cout << data.resp_body << "\n"; //finished upload
     });
-
+    while (1)SleepMs(1);
     return 0;
 }
