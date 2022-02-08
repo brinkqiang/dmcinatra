@@ -12,7 +12,7 @@ int main()
 
     std::string uri = "http://127.0.0.1:8080/upload_multipart";
     auto client = cinatra::client_factory::instance().new_client();
-    client->upload(uri, strFile, [](response_data data) {
+    client->sync_upload(uri, strFile, [](response_data data) {
         if (data.ec) {
             std::cout << data.ec.message() << "\n";
             return;
@@ -20,6 +20,5 @@ int main()
 
         std::cout << data.resp_body << "\n"; //finished upload
     });
-    while (1) SleepMs(1);
     return 0;
 }

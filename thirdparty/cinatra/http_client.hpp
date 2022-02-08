@@ -205,7 +205,7 @@ namespace cinatra {
 
         template<typename _Callable_t>
         auto async_request(http_method method, std::string uri, _Callable_t&& cb, req_content_type type = req_content_type::json, size_t seconds = 15, std::string body = "")
-        ->MODERN_CALLBACK_RESULT(void(response_data)){
+            ->MODERN_CALLBACK_RESULT(void(response_data)){
             MODERN_CALLBACK_TRAITS(cb, void(response_data));
             async_request_impl(method, std::move(uri), MODERN_CALLBACK_CALL(), type, seconds, std::move(body));
             MODERN_CALLBACK_RETURN();
@@ -232,7 +232,7 @@ namespace cinatra {
 
             bool init = last_domain_.empty();
             bool need_reset = need_switch || (!init && (uri.find(last_domain_) == std::string::npos));
-            
+
             if (need_reset) {
                 close(false);
 
@@ -246,7 +246,7 @@ namespace cinatra {
 
             auto [r, u] = get_uri(uri);
             if (!r) {
-                set_error_value(cb, boost::asio::error::basic_errors::invalid_argument, INVALID_URI);          
+                set_error_value(cb, boost::asio::error::basic_errors::invalid_argument, INVALID_URI);
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace cinatra {
             }
             else {
                 async_connect(std::move(ctx));
-            }            
+            }
         }
 
         template<typename _Callable_t>
@@ -342,6 +342,19 @@ namespace cinatra {
             multipart_str_ = std::move(filename);
             start_ = start;
             return async_request(http_method::POST, uri, std::forward<_Callable_t>(cb), req_content_type::multipart, seconds, "");
+        }
+
+        template <typename _Callable_t>
+        auto sync_upload(std::string uri, std::string filename, _Callable_t&& cb,
+            size_t seconds = 60) {
+            auto promise = std::make_shared<std::promise<void>>();
+            auto callback = [promise, cb = std::forward<_Callable_t>(cb)](auto data) {
+                cb(std::move(data));
+                promise->set_value();
+            };
+            upload(std::move(uri), std::move(filename), 0, std::move(callback),
+                seconds);
+            promise->get_future().get();
         }
 
         void add_header(std::string key, std::string val) {
@@ -453,7 +466,7 @@ namespace cinatra {
             boost::asio::ip::tcp::resolver::query query(ctx.host, ctx.port);
             resolver_.async_resolve(query, [this, self = this->shared_from_this(), ctx = std::move(ctx)]
             (boost::system::error_code ec, const boost::asio::ip::tcp::resolver::iterator& it) {
-                if (ec) {                   
+                if (ec) {
                     callback(ec);
                     return;
                 }
@@ -480,7 +493,7 @@ namespace cinatra {
 
         void do_read_write(const context& ctx) {
             boost::system::error_code error_ignored;
-            socket_.set_option(boost::asio::ip::tcp::no_delay(true), error_ignored);            
+            socket_.set_option(boost::asio::ip::tcp::no_delay(true), error_ignored);
             do_read();
             do_write(ctx);
         }
@@ -579,7 +592,7 @@ namespace cinatra {
             }
 
             if (!header_str_.empty()) {
-                if (header_str_.find("Connection")!=std::string::npos) {
+                if (header_str_.find("Connection") != std::string::npos) {
                     has_connection = true;
                 }
                 write_msg.append(header_str_).append("\r\n");
@@ -674,7 +687,7 @@ namespace cinatra {
                     close();
 
                     //read close finish
-                    if(!is_ready())
+                    if (!is_ready())
                         read_close_finished_.set_value(true);
                 }
             });
@@ -813,7 +826,7 @@ namespace cinatra {
                 download_file_->close();
             }
             else {
-                if (!sync_&&!chunked_result_.empty()) {
+                if (!sync_ && !chunked_result_.empty()) {
                     chunked_result_.clear();
                 }
             }
