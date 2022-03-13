@@ -152,7 +152,7 @@ int main() {
 
     server.set_http_handler<GET, POST>("/restype", [](request& req, response& res) {
         //http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D
-
+        //curl --location --request GET 'http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D' --header 'Content-Type: application/json' --data-raw '{"query":"","variables":{}}'
         auto itemInfo = req.get_query_value("itemInfo");
         auto json = nlohmann::json::parse(itemInfo);
         if (json.is_array())
