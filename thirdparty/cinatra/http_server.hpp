@@ -528,7 +528,7 @@ private:
 
   http_router http_router_;
   std::string static_dir_ = fs::absolute("www").string(); // default
-  std::string upload_dir_ = fs::absolute("www").string(); // default
+  std::string upload_dir_ = fs::absolute("www/upload").string(); // default
   std::time_t static_res_cache_max_age_ = 0;
 
   bool enable_timeout_ = true;
