@@ -3,6 +3,7 @@
 #include <string>
 #include "utils.hpp"
 namespace cinatra {
+    static bool use_raw_file_name = true;
     class upload_file {
     public:
         void write(const char* data, size_t size) {
@@ -62,10 +63,24 @@ namespace cinatra {
         {
             //auto directory_path = file_path_.substr(0,file_path_.rfind("/"));
             //auto new_file_path = directory_path+"/"+new_file_name;
-            std::error_code code;
-            fs::rename(file_path_, new_file_name, code);
-            if (!code) {
-                file_path_ = new_file_name;
+
+            if (use_raw_file_name)
+            {
+                std::filesystem::path directory_path = file_path_;
+                auto new_file_path = directory_path.parent_path() / raw_file_name_;
+                std::error_code code;
+                fs::rename(file_path_, new_file_path, code);
+                if (!code) {
+                    file_path_ = new_file_path.string();
+                }
+            }
+            else
+            {
+                std::error_code code;
+                fs::rename(file_path_, new_file_name, code);
+                if (!code) {
+                    file_path_ = new_file_name;
+                }
             }
         }
 
