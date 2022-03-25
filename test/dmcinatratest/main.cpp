@@ -5,27 +5,9 @@
 
 using namespace cinatra;
 
-struct log_t
-{
-    bool before(request& req, response& res) {
-        std::cout << "before log" << std::endl;
-        return true;
-    }
-
-    bool after(request& req, response& res) {
-        std::cout << "after log" << std::endl;
-        res.add_header("aaaa", "bbcc");
-        return true;
-    }
-};
-
 struct check {
     bool before(request& req, response& res) {
         std::cout << "before check" << std::endl;
-        if (req.get_header_value("name").empty()) {
-            res.set_status_and_content(status_type::bad_request);
-            return false;
-        }
 
         return true;
     }
@@ -252,7 +234,7 @@ int main() {
             std::cout << file.get_file_path() << " " << file.get_file_size() << std::endl;
         }
         res.render_string("multipart finished");
-    });
+    }, check{});
 
     //http upload(octet-stream)
     server.set_http_handler<GET, POST>("/upload_octet_stream", [](request& req, response& res) {
