@@ -431,6 +431,10 @@ void test_download() {
 
 ![qps-pipeline](lang/qps-pipeline.png "qps-pipeline")
 
+```
+wrk -t8 -c100 -d5s --latency http://127.0.0.1:8080
+```
+
 # 注意事项
 
 websocket的业务函数是会多次进入的，因此写业务逻辑的时候需要注意，推荐按照示例中的方式去做。
