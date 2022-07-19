@@ -144,10 +144,30 @@ int main() {
         auto s = req.get_query_value(0);
         res.render_string(std::string(s.data(), s.length()));
     });
+    server.set_http_handler<GET, POST>("/pos/call", [](request& req, response& res) {
+        //http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D
+        //curl --location --request GET 'http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D' --header 'Content-Type: application/json' --data-raw '{"query":"","variables":{}}'
+        //http://127.0.0.1:8080/pos/call?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D
+        auto qureries = req.queries();
+        //std::this_thread::sleep_for(std::chrono::milliseconds(50000));
+
+        auto map_req = req.get_form_url_map();
+        std::cout << "=============================================" << std::endl;
+        for (std::map<std::string_view, std::string_view>::const_iterator iter = map_req.begin(); iter != map_req.end(); ++iter)
+        {
+            auto autoStrf = std::string_view(iter->first);
+            std::cout << "first:" + std::string(autoStrf.data(), autoStrf.length()) << std::endl;
+            auto autoStrs = std::string_view(iter->second);
+            std::cout << "second:" + std::string(autoStrs.data(), autoStrs.length()) << std::endl;
+        }
+        std::cout << "=============================================" << std::endl;
+        res.set_status_and_content(status_type::ok);
+    });
 
     server.set_http_handler<GET, POST>("/restype", [](request& req, response& res) {
         //http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D
         //curl --location --request GET 'http://127.0.0.1:8080/restype?type=html&itemInfo=%5B%7B%22itemNum%22%3A%221%22%2C%22itemCode%22%3A%22638%22%7D%5D' --header 'Content-Type: application/json' --data-raw '{"query":"","variables":{}}'
+        auto qureries = req.queries();
         auto itemInfo = req.get_query_value("itemInfo");
         auto json = nlohmann::json::parse(itemInfo);
         if (json.is_array())
