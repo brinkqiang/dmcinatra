@@ -43,7 +43,6 @@ int main()
         response_data result = client->get(uri3);
         print(result);
     }
-    print(result5);
 #endif
 
     {

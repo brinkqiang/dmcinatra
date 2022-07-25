@@ -55,7 +55,7 @@ int main() {
 
     http_server server(std::thread::hardware_concurrency());
 #ifdef CINATRA_ENABLE_SSL
-    server.init_ssl_context(true, [](auto, auto) { return "123456"; }, "server.crt", "server.key", "dh1024.pem");
+    //server.init_ssl_context(true, [](auto, auto) { return "123456"; }, "server.crt", "server.key", "dh1024.pem");
     bool r = server.listen("0.0.0.0", "https");
 #else
     bool r = server.listen("0.0.0.0", "8080");
