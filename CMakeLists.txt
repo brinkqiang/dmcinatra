@@ -46,6 +46,8 @@ ModuleImport("dmopenssl" "thirdparty/dmopenssl")
 
 IF(WIN32)
     ExeImport("test" "crypto;ssl")
+ELSEIF(APPLE)
+    ExeImport("test" "crypto;ssl")
 ELSE(UNIX)
     find_library(LIB_STD_FS stdc++fs)
     IF(LIB_STD_FS_FOUND)
