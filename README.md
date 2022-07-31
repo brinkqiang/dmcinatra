@@ -1,5 +1,17 @@
 # cinatra--一个高效易用的c++ http框架
 
+## Build status
+| [Linux][lin-link] | [Mac][mac-link] | [Windows][win-link] |
+| :---------------: | :----------------: | :-----------------: |
+| ![lin-badge]      | ![mac-badge]       | ![win-badge]        |
+
+[lin-badge]: https://github.com/brinkqiang/dmcinatra/workflows/linux/badge.svg "linux build status"
+[lin-link]:  https://github.com/brinkqiang/dmcinatra/actions/workflows/linux.yml "linux build status"
+[mac-badge]: https://github.com/brinkqiang/dmcinatra/workflows/mac/badge.svg "mac build status"
+[mac-link]:  https://github.com/brinkqiang/dmcinatra/actions/workflows/mac.yml "mac build status"
+[win-badge]: https://github.com/brinkqiang/dmcinatra/workflows/win/badge.svg "win build status"
+[win-link]:  https://github.com/brinkqiang/dmcinatra/actions/workflows/win.yml "win build status"
+
 <p align="center">
   <a href="https://github.com/qicosmos/cinatra/tree/master/lang/english">English</a> | <span>中文</span>
 </p>
