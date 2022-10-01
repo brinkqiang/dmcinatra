@@ -14,7 +14,7 @@ rm -rf build
 mkdir -p build
 pushd build
 
-cmake -DCMAKE_BUILD_TYPE=relwithdebinfo ..
+cmake -DCMAKE_BUILD_TYPE=relwithdebinfo -DBUILD_SHARED_LIBS=1 ..
 cmake --build . --config relwithdebinfo -- -j$(nproc)
 
 popd
